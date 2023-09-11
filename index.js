@@ -26,7 +26,36 @@ app.get("/api/hello", function (req, res) {
 
 
 
+app.get('/api/:date?', (req, res) => {
+    let date;
+
+    // If date parameter is not provided
+    if (!req.params.date) {
+        date = new Date();
+    } else {
+        // If date parameter is a number (unix timestamp)
+        if (isFinite(req.params.date)) {
+            date = new Date(Number(req.params.date));
+        } else {
+            // Try to parse as a string date
+            date = new Date(req.params.date);
+        }
+    }
+
+    // If date is invalid
+    if (isNaN(date.getTime())) {
+        res.json({ error: "Invalid Date" });
+    } else {
+        res.json({
+            unix: date.getTime(),
+            utc: date.toUTCString()
+        });
+    }
+});
+
+
 // listen for requests :)
 var listener = app.listen(process.env.PORT, function () {
   console.log('Your app is listening on port ' + listener.address().port);
 });
+
